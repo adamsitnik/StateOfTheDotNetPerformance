@@ -3,15 +3,16 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp1.1;net46</TargetFrameworks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.10.6.189" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.6.202" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0-preview1-25305-02" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.10.6.189" />
+    <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.10.6.202" />
   </ItemGroup>
 
 </Project>

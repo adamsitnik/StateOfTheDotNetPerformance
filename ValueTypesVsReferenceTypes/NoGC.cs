@@ -1,14 +1,16 @@
 ﻿using BenchmarkDotNet.Attributes;
 using System;
+using BenchmarkDotNet.Attributes.Jobs;
 
 namespace StateOfTheDotNetPerformance
 {
-    [BenchmarkCategory("Value Types vs Reference Types")]
+    [BenchmarkCategory(Categories.ValueTypesVsReferenceTypes)]
+    [RyuJitX64Job, LegacyJitX86Job]
     [MemoryDiagnoser]
     public class NoGC
     {
         [Benchmark(Baseline = true)]
-        public (int, int) CreateValueTuple() => (0, 0);
+        public ValueTuple<int, int> CreateValueTuple() => ValueTuple.Create(0, 0);
 
         [Benchmark]
         public Tuple<int, int> CreateTuple() => Tuple.Create(0, 0);
