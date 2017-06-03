@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26510.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateOfTheDotNetPerformance", "StateOfTheDotNetPerformance.csproj", "{83F5A55F-1D2B-49F1-8E88-6E3A33A55000}"
 EndProject
