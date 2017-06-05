@@ -1,7 +1,5 @@
-﻿#if NET46
+﻿#if NET46 // .NET Core 1.1 does not support GC.TryStartNoGCRegion, .NET Core 2.0 fails with exception on my box
 using System;
-using System.Collections.Generic;
-using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Exporters;
 using System.Runtime;
@@ -11,29 +9,33 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Environments;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using BenchmarkDotNet.Engines;
 
 namespace StateOfTheDotNetPerformance
 {
     [Config(typeof(AllocationsConfig))]
-    // [RPlotExporter] // uncomment to get nice charts!
-    // [CsvMeasurementsExporter] // uncomment to get nice charts!
-    public class Allocations
+    [RPlotExporter] // uncomment to get nice charts!
+    [CsvMeasurementsExporter] // uncomment to get nice charts!
+    public class SmallAllocations
     {
         const long MaxNoGcRegion = (64 * 1024L * 1024L); // http://mattwarren.org/2016/08/16/Preventing-dotNET-Garbage-Collections-with-the-TryStartNoGCRegion-API/
 
         [Params(8,
+            16,
+            32,
             64,
             128,
             256,
             512,
-            1024,
-            1024 * 4,
-            1024 * 8)]
+            1024)]
         public int SizeInBytes { get; set; }
 
         [IterationSetup]
         public void IterationSetup()
         {
+            // the goal of this benchmark is to measure how fast allocation is, so we tell GC to rest for a while
+            // to have clean results, without GC side-effects
+
             try
             {
                 GC.TryStartNoGCRegion(MaxNoGcRegion, disallowFullBlockingGC: true);
@@ -52,7 +54,7 @@ namespace StateOfTheDotNetPerformance
         }
 
         [Benchmark(Description = "new", Baseline = true)]
-        public void Allocate() => Blackhole(new byte[SizeInBytes]);
+        public void Allocate() => DeadCodeEliminationHelper.KeepAliveWithoutBoxing(new byte[SizeInBytes]);
 
         [Benchmark(Description = "stackalloc")]
         public unsafe void AllocateWithStackalloc()
@@ -65,7 +67,7 @@ namespace StateOfTheDotNetPerformance
         public void AllocateWithMarshal()
         {
             var arrayPointer = Marshal.AllocHGlobal(SizeInBytes);
-            Blackhole(arrayPointer);
+            DeadCodeEliminationHelper.KeepAliveWithoutBoxing(arrayPointer);
 
             // I am NOT freeing the memory on Purpose
             // why? because otherwise every other benchmark run will get the same block of memory 
@@ -73,11 +75,8 @@ namespace StateOfTheDotNetPerformance
             // Marshal.FreeHGlobal(arrayPointer);
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        protected unsafe void Blackhole(byte* input) { }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void Blackhole<T>(T input) { }
+        [MethodImpl(MethodImplOptions.NoInlining)] // no-inlining prevents from dead code elimination
+        private unsafe void Blackhole(byte* input) { }
     }
 
     public class AllocationsConfig : ManualConfig

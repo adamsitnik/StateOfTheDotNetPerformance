@@ -7,14 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.10.6.202" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.7" />
+    <PackageReference Include="System.Buffers" Version="4.4.0-preview1-25305-02" />
     <PackageReference Include="System.Runtime" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0-preview1-25305-02" />
     <PackageReference Include="System.Memory" Version="4.4.0-preview1-25305-02" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.10.6.202" />
+    <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.10.7" />
   </ItemGroup>
 
 </Project>
